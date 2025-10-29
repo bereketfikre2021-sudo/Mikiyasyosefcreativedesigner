@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mikiyas — Creative Developer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">Mikiyas</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#portfolio" class="nav-link">Portfolio</a></li>
+                <li><a href="#experience" class="nav-link">Experience</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-background">
+            <div class="gradient-orb orb-1"></div>
+            <div class="gradient-orb orb-2"></div>
+            <div class="gradient-orb orb-3"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    <span class="title-line">Mikiyas</span>
+                    <span class="title-line subtitle">Creative Developer</span>
+                </h1>
+                <p class="hero-tagline">Creating digital experiences through code, design & motion</p>
+                <button class="cta-button">
+                    <span>View My Work</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-line"></div>
+            <span>Scroll</span>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">About Me</h2>
+                <p class="section-subtitle">Passionate about creating digital experiences</p>
+            </div>
+            <div class="about-content">
+                <div class="about-image">
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop&crop=face" alt="Mikiyas" class="profile-img">
+                        <div class="image-glow"></div>
+                    </div>
+                </div>
+                <div class="about-text">
+                    <p class="about-description">
+                        I'm a multi-disciplinary creative professional specializing in development, design, and visual storytelling. 
+                        With expertise spanning from web development to motion graphics, I bring ideas to life through clean code, 
+                        innovative design, and compelling visual narratives that engage and inspire audiences.
+                    </p>
+                    <div class="skills-container">
+                        <h3>Skills & Expertise</h3>
+                        <div class="skills-categories">
+                            <div class="skill-category">
+                                <h4>Development</h4>
+                                <div class="skills-grid">
+                                    <div class="skill-item">
+                                        <i class="fab fa-html5"></i>
+                                        <span>HTML5</span>
+                                    </div>
+                                    <div class="skill-item">
+                                        <i class="fab fa-css3-alt"></i>
+                                        <span>CSS3</span>
+                                    </div>
+                                    <div class="skill-item">
+                                        <i class="fab fa-js"></i>
+                                        <span>JavaScript</span>
+                                    </div>
+                                    <div class="skill-item">
+                                        <i class="fab fa-react"></i>
+                                        <span>React</span>
+                                    </div>
+                                    <div class="skill-item">
+                                        <i class="fab fa-node-js"></i>
+                                        <span>Node.js</span>
+                                    </div>
+                                    <div class="skill-item">
+                                        <i class="fas fa-database"></i>
+                                        <span>Firebase</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="skill-category">
+                                <h4>Design & Creative</h4>
+                                <div class="skills-grid">
+                                    <div class="skill-item">
+                                        <i class="fas fa-paint-brush"></i>
+                                        <span>Graphics Design</span>
+                                    </div>
+                                    <div class="skill-item">
+                                        <i class="fas fa-video"></i>
+                                        <span>Video Editing</span>
+                                    </div>
+                                    <div class="skill-item">
+                                        <i class="fas fa-play-circle"></i>
+                                        <span>Motion Graphics</span>
+                                    </div>
+                                    <div class="skill-item">
+                                        <i class="fas fa-palette"></i>
+                                        <span>UI/UX Design</span>
+                                    </div>
+                                    <div class="skill-item">
+                                        <i class="fas fa-vector-square"></i>
+                                        <span>Illustration</span>
+                                    </div>
+                                    <div class="skill-item">
+                                        <i class="fas fa-camera"></i>
+                                        <span>Photography</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="portfolio">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Portfolio</h2>
+                <p class="section-subtitle">Selected projects that showcase my work</p>
+            </div>
+            <div class="portfolio-grid">
+                <div class="portfolio-item" data-project="1">
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop" alt="E-commerce Platform">
+                        <div class="project-overlay">
+                            <h3>E-commerce Platform</h3>
+                            <p>Full-stack web application</p>
+                            <button class="view-project-btn">View Project</button>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3>E-commerce Platform</h3>
+                        <p>React • Node.js • MongoDB</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item" data-project="2">
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600&h=400&fit=crop" alt="Mobile App">
+                        <div class="project-overlay">
+                            <h3>Mobile App</h3>
+                            <p>Cross-platform mobile application</p>
+                            <button class="view-project-btn">View Project</button>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3>Mobile App</h3>
+                        <p>React Native • Firebase</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item" data-project="3">
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop" alt="Data Dashboard">
+                        <div class="project-overlay">
+                            <h3>Data Dashboard</h3>
+                            <p>Analytics and visualization platform</p>
+                            <button class="view-project-btn">View Project</button>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3>Data Dashboard</h3>
+                        <p>Vue.js • D3.js • Python</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item" data-project="4">
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop" alt="SaaS Platform">
+                        <div class="project-overlay">
+                            <h3>SaaS Platform</h3>
+                            <p>Cloud-based software solution</p>
+                            <button class="view-project-btn">View Project</button>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3>SaaS Platform</h3>
+                        <p>Next.js • AWS • PostgreSQL</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item" data-project="5">
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600&h=400&fit=crop" alt="AI Chatbot">
+                        <div class="project-overlay">
+                            <h3>AI Chatbot</h3>
+                            <p>Intelligent customer service bot</p>
+                            <button class="view-project-btn">View Project</button>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3>AI Chatbot</h3>
+                        <p>Python • OpenAI • FastAPI</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item" data-project="6">
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop" alt="Blockchain App">
+                        <div class="project-overlay">
+                            <h3>Blockchain App</h3>
+                            <p>Decentralized finance application</p>
+                            <button class="view-project-btn">View Project</button>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3>Blockchain App</h3>
+                        <p>Web3 • Solidity • Ethers.js</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="experience">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Experience & Skills</h2>
+                <p class="section-subtitle">My professional journey and achievements</p>
+            </div>
+            <div class="timeline-container">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Computer Science Degree</h3>
+                            <p>Bachelor's in Computer Science with focus on software engineering</p>
+                            <span class="timeline-year">2020</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Frontend Developer</h3>
+                            <p>Developed responsive web applications using React and modern CSS</p>
+                            <span class="timeline-year">2021</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Full-Stack Developer</h3>
+                            <p>Built end-to-end applications with Node.js and various databases</p>
+                            <span class="timeline-year">2022</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Mobile Developer</h3>
+                            <p>Created cross-platform mobile apps with React Native</p>
+                            <span class="timeline-year">2023</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Senior Developer</h3>
+                            <p>Leading development teams and architecting scalable solutions</p>
+                            <span class="timeline-year">2024</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="contact-background">
+            <div class="particle-field"></div>
+        </div>
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Get In Touch</h2>
+                <p class="section-subtitle">Let's create something amazing together</p>
+            </div>
+            <div class="contact-content">
+                <div class="contact-form-container">
+                    <form class="contact-form">
+                        <div class="form-group">
+                            <input type="text" id="name" name="name" required>
+                            <label for="name">Name</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="email" name="email" required>
+                            <label for="email">Email</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="subject" name="subject" required>
+                            <label for="subject">Subject</label>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                            <label for="message">Message</label>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <span>Send Message</span>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+                <div class="social-links">
+                    <h3>Connect with me</h3>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-github"></i>
+                            <span>GitHub</span>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-behance"></i>
+                            <span>Behance</span>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-linkedin"></i>
+                            <span>LinkedIn</span>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-telegram"></i>
+                            <span>Telegram</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span class="logo-text">Mikiyas</span>
+                </div>
+                <div class="footer-links">
+                    <a href="#home">Home</a>
+                    <a href="#about">About</a>
+                    <a href="#portfolio">Portfolio</a>
+                    <a href="#experience">Experience</a>
+                    <a href="#contact">Contact</a>
+                </div>
+                <div class="footer-copyright">
+                    <p>&copy; 2024 Mikiyas. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Project Modal -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-body">
+                <div class="modal-image">
+                    <img id="modalImg" src="" alt="">
+                </div>
+                <div class="modal-info">
+                    <h2 id="modalTitle"></h2>
+                    <p id="modalDescription"></p>
+                    <div class="modal-tech">
+                        <span id="modalTech"></span>
+                    </div>
+                    <div class="modal-links">
+                        <a href="#" id="modalDemo" class="modal-link">Live Demo</a>
+                        <a href="#" id="modalGithub" class="modal-link">GitHub</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
