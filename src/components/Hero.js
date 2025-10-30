@@ -2,6 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 
 const Hero = () => {
   const canvasRef = useRef(null);
+  const rafIdRef = useRef(null);
+  const resizeHandlerRef = useRef(null);
+  const counterTimerRef = useRef(null);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [countedStats, setCountedStats] = useState({
     projects: 0,
@@ -10,8 +14,32 @@ const Hero = () => {
   });
 
   useEffect(() => {
-    initParticleSystem();
-    startCountingAnimation();
+    const mql = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const onChange = () => setPrefersReducedMotion(!!mql.matches);
+    onChange();
+    mql.addEventListener?.('change', onChange);
+
+    if (!mql.matches) {
+      initParticleSystem();
+      startCountingAnimation();
+    } else {
+      // Respect reduced motion: set final values immediately
+      setCountedStats({ projects: 50, years: 5, satisfaction: 100 });
+    }
+
+    return () => {
+      mql.removeEventListener?.('change', onChange);
+      // Cleanup particle animation and listeners
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+      if (resizeHandlerRef.current) {
+        window.removeEventListener('resize', resizeHandlerRef.current);
+      }
+      if (counterTimerRef.current) {
+        clearInterval(counterTimerRef.current);
+      }
+    };
   }, []);
 
   const startCountingAnimation = () => {
@@ -36,6 +64,7 @@ const Hero = () => {
         setCountedStats(targets);
       }
     }, stepDuration);
+    counterTimerRef.current = timer;
   };
 
   const initParticleSystem = () => {
@@ -53,6 +82,7 @@ const Hero = () => {
 
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
+    resizeHandlerRef.current = resizeCanvas;
 
     for (let i = 0; i < particleCount; i++) {
       particles.push({
@@ -109,10 +139,12 @@ const Hero = () => {
         });
       });
 
-      requestAnimationFrame(animate);
+      rafIdRef.current = requestAnimationFrame(animate);
     };
 
-    animate();
+    if (!prefersReducedMotion) {
+      animate();
+    }
   };
 
   const handleMouseMove = (e) => {
@@ -175,30 +207,30 @@ const Hero = () => {
 
           {/* CTA Buttons */}
           <div className="hero-actions">
-            <button className="btn-primary" onClick={scrollToPortfolio}>
-              <span>View My Work</span>
-              <i className="fas fa-arrow-right"></i>
-            </button>
-            <button className="btn-secondary" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
-              <span>Get In Touch</span>
-              <i className="fas fa-envelope"></i>
-            </button>
+            <a className="btn-secondary" href="https://heyzine.com/flip-book/2e51bd7d15.html" target="_blank" rel="noopener noreferrer">
+              <span>View CV</span>
+              <i className="fas fa-file-alt" aria-hidden="true"></i>
+            </a>
+            <a className="btn-primary" href="#contact">
+              <span>Hire Me</span>
+              <i className="fas fa-briefcase" aria-hidden="true"></i>
+            </a>
           </div>
         </div>
 
         {/* Social Links */}
         <div className="hero-social">
           <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="GitHub">
-            <i className="fab fa-github"></i>
+            <i className="fab fa-github" aria-hidden="true"></i>
           </a>
           <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="LinkedIn">
-            <i className="fab fa-linkedin"></i>
+            <i className="fab fa-linkedin" aria-hidden="true"></i>
           </a>
           <a href="https://behance.net" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Behance">
-            <i className="fab fa-behance"></i>
+            <i className="fab fa-behance" aria-hidden="true"></i>
           </a>
           <a href="https://t.me/Miko_Cr7" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Telegram">
-            <i className="fab fa-telegram"></i>
+            <i className="fab fa-telegram" aria-hidden="true"></i>
           </a>
         </div>
 

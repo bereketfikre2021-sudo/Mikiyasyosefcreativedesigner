@@ -1,80 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
+import projects from '../data/projects';
 
 const Portfolio = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [activeFilter, setActiveFilter] = useState('all');
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
+  const [isFiltering, setIsFiltering] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [loadedIds, setLoadedIds] = useState(new Set());
+  const [modalImageLoaded, setModalImageLoaded] = useState(false);
   const portfolioRef = useRef(null);
 
-  const projects = [
-    {
-      id: 1,
-      title: "Brand Identity Design",
-      description: "Complete brand identity package for tech startup",
-      tech: "Adobe Illustrator • Photoshop • InDesign",
-      category: "branding",
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop",
-      demo: "#",
-      behance: "#",
-      featured: true
-    },
-    {
-      id: 2,
-      title: "UI/UX Design System",
-      description: "Comprehensive design system for mobile app",
-      tech: "Figma • Adobe XD • Principle",
-      category: "ui-ux",
-      image: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600&h=400&fit=crop",
-      demo: "#",
-      behance: "#",
-      featured: true
-    },
-    {
-      id: 3,
-      title: "Motion Graphics",
-      description: "Animated explainer video for product launch",
-      tech: "After Effects • Cinema 4D • Premiere Pro",
-      category: "motion",
-      image: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=600&h=400&fit=crop",
-      demo: "#",
-      behance: "#",
-      featured: false
-    },
-    {
-      id: 4,
-      title: "Print Design Collection",
-      description: "Marketing materials and business cards",
-      tech: "Adobe InDesign • Illustrator • Photoshop",
-      category: "print",
-      image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=600&h=400&fit=crop",
-      demo: "#",
-      behance: "#",
-      featured: false
-    },
-    {
-      id: 5,
-      title: "Web Design & Development",
-      description: "Modern portfolio website with custom animations",
-      tech: "Figma • React • CSS3 • JavaScript",
-      category: "web",
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop",
-      demo: "#",
-      github: "#",
-      featured: true
-    },
-    {
-      id: 6,
-      title: "Social Media Graphics",
-      description: "Instagram campaign and social media assets",
-      tech: "Photoshop • Illustrator • Canva",
-      category: "social",
-      image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&h=400&fit=crop",
-      demo: "#",
-      behance: "#",
-      featured: false
-    }
-  ];
+  // projects now imported from ../data/projects
 
   const filters = [
     { id: 'all', label: 'All Projects', icon: 'fas fa-th' },
@@ -85,6 +23,39 @@ const Portfolio = () => {
     { id: 'web', label: 'Web Design', icon: 'fas fa-globe' },
     { id: 'social', label: 'Social Media', icon: 'fas fa-share-alt' }
   ];
+
+  useEffect(() => {
+    // Initialize filter from URL (e.g., ?filter=web)
+    const params = new URLSearchParams(window.location.search);
+    const urlFilter = params.get('filter');
+    const validFilterIds = new Set(filters.map(f => f.id));
+    if (urlFilter && validFilterIds.has(urlFilter)) {
+      setActiveFilter(urlFilter);
+    }
+
+    // Handle back/forward navigation
+    const handlePopState = () => {
+      const p = new URLSearchParams(window.location.search);
+      const f = p.get('filter');
+      if (f && validFilterIds.has(f)) {
+        setActiveFilter(f);
+      } else {
+        setActiveFilter('all');
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  useEffect(() => {
+    // Reduced motion preference
+    const mql = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const onChange = () => setPrefersReducedMotion(!!mql.matches);
+    onChange();
+    mql.addEventListener?.('change', onChange);
+    return () => mql.removeEventListener?.('change', onChange);
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -109,22 +80,69 @@ const Portfolio = () => {
     } else {
       setFilteredProjects(projects.filter(project => project.category === activeFilter));
     }
-  }, [activeFilter]);
+    // Animate filter transition
+    if (!prefersReducedMotion) {
+      setIsFiltering(true);
+      const t = setTimeout(() => setIsFiltering(false), 200);
+      return () => clearTimeout(t);
+    }
+    // Update URL to reflect current filter (pushState for back/forward)
+    const params = new URLSearchParams(window.location.search);
+    if (activeFilter === 'all') {
+      params.delete('filter');
+    } else {
+      params.set('filter', activeFilter);
+    }
+    const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}${window.location.hash}`;
+    window.history.pushState({}, '', newUrl);
+  }, [activeFilter, prefersReducedMotion]);
+  const handleFilterClick = (id) => {
+    setActiveFilter(id);
+  };
+
+  const handleImageLoad = (id) => {
+    setLoadedIds(prev => new Set(prev).add(id));
+  };
 
   const openModal = (project) => {
     setSelectedProject(project);
+    setModalImageLoaded(false);
   };
 
   const closeModal = () => {
     setSelectedProject(null);
   };
 
+  const buildSrcSet = (url) => {
+    try {
+      const widths = [400, 600, 900, 1200];
+      return widths
+        .map((w) => `${url.replace(/w=\d+/, `w=${w}`)} ${w}w`)
+        .join(', ');
+    } catch {
+      return undefined;
+    }
+  };
+
+  const sizes = "(max-width: 600px) 100vw, (max-width: 1200px) 50vw, 33vw";
+
+  const getIntrinsicSize = (url) => {
+    try {
+      const u = new URL(url);
+      const w = parseInt(u.searchParams.get('w') || '600', 10);
+      const h = parseInt(u.searchParams.get('h') || '400', 10);
+      return { width: w, height: h };
+    } catch {
+      return { width: 600, height: 400 };
+    }
+  };
+
   return (
     <>
-      <section id="portfolio" className="portfolio" ref={portfolioRef}>
+      <section id="portfolio" className="portfolio" ref={portfolioRef} aria-labelledby="portfolio-title">
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">Portfolio</h2>
+            <h2 id="portfolio-title" className="section-title">Portfolio</h2>
             <p className="section-subtitle">Selected projects that showcase my work</p>
           </div>
 
@@ -133,7 +151,7 @@ const Portfolio = () => {
               <button
                 key={filter.id}
                 className={`filter-btn ${activeFilter === filter.id ? 'active' : ''}`}
-                onClick={() => setActiveFilter(filter.id)}
+                onClick={() => handleFilterClick(filter.id)}
               >
                 <i className={filter.icon}></i>
                 <span>{filter.label}</span>
@@ -141,7 +159,7 @@ const Portfolio = () => {
             ))}
           </div>
 
-          <div className="portfolio-grid">
+          <div className={`portfolio-grid ${isFiltering ? 'animating' : ''}`}>
             {filteredProjects.map((project, index) => (
               <div 
                 key={project.id} 
@@ -150,7 +168,18 @@ const Portfolio = () => {
                 data-category={project.category}
               >
                 <div className="project-image">
-                  <img src={project.image} alt={project.title} />
+                  <img 
+                    src={project.image} 
+                    srcSet={buildSrcSet(project.image)}
+                    sizes={sizes}
+                    loading="lazy"
+                    decoding="async"
+                    width={getIntrinsicSize(project.image).width}
+                    height={getIntrinsicSize(project.image).height}
+                    alt={project.title}
+                    onLoad={() => handleImageLoad(project.id)}
+                    className={loadedIds.has(project.id) ? '' : 'lqip'} 
+                  />
                   <div className="project-overlay">
                     <div className="project-badge">
                       {project.featured && <span className="featured-badge">Featured</span>}
@@ -169,16 +198,20 @@ const Portfolio = () => {
                     </button>
                   </div>
                 </div>
-                <div className="project-info">
+              <div className="project-info">
                   <h3>{project.title}</h3>
                   <p>{project.tech}</p>
                   <div className="project-links">
-                    <a href={project.demo} className="project-link" target="_blank" rel="noopener noreferrer">
-                      <i className="fas fa-external-link-alt"></i>
+                  {project.demo && project.demo !== '#' && (
+                    <a href={project.demo} className="project-link" target="_blank" rel="noopener noreferrer" aria-label={`Open live demo of ${project.title}`}>
+                      <i className="fas fa-external-link-alt" aria-hidden="true"></i>
                     </a>
-                    <a href={project.behance || project.github} className="project-link" target="_blank" rel="noopener noreferrer">
-                      <i className={project.behance ? "fab fa-behance" : "fab fa-github"}></i>
+                  )}
+                  {(project.behance && project.behance !== '#') || (project.github && project.github !== '#') ? (
+                    <a href={(project.behance && project.behance !== '#') ? project.behance : project.github} className="project-link" target="_blank" rel="noopener noreferrer" aria-label={`${(project.behance && project.behance !== '#') ? 'Open Behance' : 'Open GitHub'} for ${project.title}`}>
+                      <i className={(project.behance && project.behance !== '#') ? "fab fa-behance" : "fab fa-github"} aria-hidden="true"></i>
                     </a>
+                  ) : null}
                   </div>
                 </div>
               </div>
@@ -195,7 +228,18 @@ const Portfolio = () => {
             <span className="close" onClick={closeModal}>&times;</span>
             <div className="modal-body">
               <div className="modal-image">
-                <img src={selectedProject.image} alt={selectedProject.title} />
+                <img 
+                  src={selectedProject.image}
+                  srcSet={buildSrcSet(selectedProject.image)}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  loading="eager"
+                  decoding="async"
+                  width={getIntrinsicSize(selectedProject.image).width}
+                  height={getIntrinsicSize(selectedProject.image).height}
+                  alt={selectedProject.title}
+                  onLoad={() => setModalImageLoaded(true)} 
+                  className={modalImageLoaded ? '' : 'lqip'} 
+                />
                 <div className="modal-badge">
                   {selectedProject.featured && <span className="featured-badge">Featured</span>}
                   <span className="category-badge">{selectedProject.category}</span>
@@ -210,14 +254,18 @@ const Portfolio = () => {
                   ))}
                 </div>
                 <div className="modal-links">
-                  <a href={selectedProject.demo} className="modal-link" target="_blank" rel="noopener noreferrer">
-                    <i className="fas fa-external-link-alt"></i>
-                    <span>Live Demo</span>
-                  </a>
-                  <a href={selectedProject.behance || selectedProject.github} className="modal-link" target="_blank" rel="noopener noreferrer">
-                    <i className={selectedProject.behance ? "fab fa-behance" : "fab fa-github"}></i>
-                    <span>{selectedProject.behance ? "Behance" : "GitHub"}</span>
-                  </a>
+                  {selectedProject.demo && selectedProject.demo !== '#' && (
+                    <a href={selectedProject.demo} className="modal-link" target="_blank" rel="noopener noreferrer" aria-label={`Open live demo of ${selectedProject.title}`}>
+                      <i className="fas fa-external-link-alt" aria-hidden="true"></i>
+                      <span>Live Demo</span>
+                    </a>
+                  )}
+                  {(selectedProject.behance && selectedProject.behance !== '#') || (selectedProject.github && selectedProject.github !== '#') ? (
+                    <a href={(selectedProject.behance && selectedProject.behance !== '#') ? selectedProject.behance : selectedProject.github} className="modal-link" target="_blank" rel="noopener noreferrer" aria-label={`${(selectedProject.behance && selectedProject.behance !== '#') ? 'Open Behance' : 'Open GitHub'} for ${selectedProject.title}`}>
+                      <i className={(selectedProject.behance && selectedProject.behance !== '#') ? "fab fa-behance" : "fab fa-github"} aria-hidden="true"></i>
+                      <span>{(selectedProject.behance && selectedProject.behance !== '#') ? "Behance" : "GitHub"}</span>
+                    </a>
+                  ) : null}
                 </div>
               </div>
             </div>

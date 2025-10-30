@@ -4,30 +4,38 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-      
-      // Update active section based on scroll position
-      const sections = ['home', 'about', 'portfolio', 'experience', 'contact'];
-      const scrollPosition = window.scrollY + 100;
-      
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const element = document.getElementById(sections[i]);
-        if (element && element.offsetTop <= scrollPosition) {
-          setActiveSection(sections[i]);
-          break;
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        setIsScrolled(window.scrollY > 50);
+      const sections = ['home', 'about', 'services', 'portfolio', 'experience', 'testimonials', 'contact'];
+        const scrollPosition = window.scrollY + 100;
+        for (let i = sections.length - 1; i >= 0; i--) {
+          const element = document.getElementById(sections[i]);
+          if (element && element.offsetTop <= scrollPosition) {
+            setActiveSection(sections[i]);
+            break;
+          }
         }
-      }
+        ticking = false;
+      });
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const toggleAboutMenu = () => {
+    setIsAboutOpen((prev) => !prev);
   };
 
   const scrollToSection = (sectionId) => {
@@ -37,52 +45,91 @@ const Navbar = () => {
     }
     setIsMenuOpen(false);
     setActiveSection(sectionId);
+    setIsAboutOpen(false);
   };
 
   return (
-    <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
-      <div className="nav-container">
+    <header>
+      <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`} role="navigation" aria-label="Primary">
+        <div className="nav-container">
         <div className="nav-logo">
-          <img src="/img/Mikiyas Yosef Logo.svg" alt="Mikiyas Yosef" className="logo-img" />
+          <img src="/img/Mikiyas Yosef Logo.svg" alt="Mikiyas Yosef" className="logo-img" decoding="async" fetchpriority="high" />
         </div>
         
-        <ul className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
+        <ul id="primary-menu" className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
           <li>
             <button 
               onClick={() => scrollToSection('home')} 
               className={`nav-link ${activeSection === 'home' ? 'active' : ''}`}
+              aria-current={activeSection === 'home' ? 'page' : undefined}
             >
               <span>Home</span>
             </button>
           </li>
-          <li>
+          <li className={`nav-item has-submenu ${isAboutOpen ? 'open' : ''}`}>
             <button 
-              onClick={() => scrollToSection('about')} 
-              className={`nav-link ${activeSection === 'about' ? 'active' : ''}`}
+              onClick={toggleAboutMenu}
+              className={`nav-link ${['about','portfolio','experience'].includes(activeSection) ? 'active' : ''}`}
+              aria-haspopup="true"
+              aria-expanded={isAboutOpen}
+              aria-controls="about-submenu"
             >
               <span>About</span>
             </button>
+            <ul id="about-submenu" className="submenu" role="menu">
+              <li>
+                <button 
+                  className="nav-link" 
+                  role="menuitem"
+                  onClick={() => scrollToSection('about')}
+                >
+                  <span>About</span>
+                </button>
+              </li>
+              <li>
+                <button 
+                  className="nav-link" 
+                  role="menuitem"
+                  onClick={() => scrollToSection('experience')}
+                >
+                  <span>Experience</span>
+                </button>
+              </li>
+              <li>
+                <button 
+                  className="nav-link" 
+                  role="menuitem"
+                  onClick={() => scrollToSection('portfolio')}
+                >
+                  <span>Portfolio</span>
+                </button>
+              </li>
+            </ul>
           </li>
           <li>
             <button 
-              onClick={() => scrollToSection('portfolio')} 
-              className={`nav-link ${activeSection === 'portfolio' ? 'active' : ''}`}
+              onClick={() => scrollToSection('services')} 
+              className={`nav-link ${activeSection === 'services' ? 'active' : ''}`}
+              aria-current={activeSection === 'services' ? 'page' : undefined}
             >
-              <span>Portfolio</span>
+              <span>Services</span>
             </button>
           </li>
           <li>
             <button 
-              onClick={() => scrollToSection('experience')} 
-              className={`nav-link ${activeSection === 'experience' ? 'active' : ''}`}
+              onClick={() => scrollToSection('testimonials')} 
+              className={`nav-link ${activeSection === 'testimonials' ? 'active' : ''}`}
+              aria-current={activeSection === 'testimonials' ? 'page' : undefined}
             >
-              <span>Experience</span>
+              <span>Testimonials</span>
             </button>
           </li>
+          
           <li>
             <button 
               onClick={() => scrollToSection('contact')} 
               className={`nav-link ${activeSection === 'contact' ? 'active' : ''}`}
+              aria-current={activeSection === 'contact' ? 'page' : undefined}
             >
               <span>Contact</span>
             </button>
@@ -90,14 +137,22 @@ const Navbar = () => {
         </ul>
         
         <div className="nav-actions">
-          <div className={`hamburger ${isMenuOpen ? 'active' : ''}`} onClick={toggleMenu}>
-            <span className="bar"></span>
-            <span className="bar"></span>
-            <span className="bar"></span>
-          </div>
+          <button
+            type="button"
+            className={`hamburger ${isMenuOpen ? 'active' : ''}`}
+            aria-label="Toggle menu"
+            aria-controls="primary-menu"
+            aria-expanded={isMenuOpen}
+            onClick={toggleMenu}
+          >
+            <span className="bar" aria-hidden="true"></span>
+            <span className="bar" aria-hidden="true"></span>
+            <span className="bar" aria-hidden="true"></span>
+          </button>
         </div>
-      </div>
-    </nav>
+        </div>
+      </nav>
+    </header>
   );
 };
 

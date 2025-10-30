@@ -22,7 +22,7 @@ const Footer = () => {
           {/* Logo and Name */}
           <div className="footer-brand">
             <div className="footer-logo">
-              <img src="/img/Mikiyas Yosef Logo.svg" alt="Mikiyas Yosef" className="footer-logo-img" />
+              <img src="/img/Mikiyas Yosef Logo.svg" alt="Mikiyas Yosef" className="footer-logo-img" loading="lazy" decoding="async" />
             </div>
             <span className="footer-name">Mikiyas Yosef</span>
           </div>

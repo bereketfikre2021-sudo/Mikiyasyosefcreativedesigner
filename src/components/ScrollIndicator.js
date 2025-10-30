@@ -5,16 +5,21 @@ const ScrollIndicator = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const scrollTop = window.pageYOffset;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = (scrollTop / docHeight) * 100;
-      
-      setScrollPercentage(scrollPercent);
-      setShowScrollTop(scrollTop > 300);
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const scrollTop = window.pageYOffset;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollPercent = (docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
+        setScrollPercentage(scrollPercent);
+        setShowScrollTop(scrollTop > 300);
+        ticking = false;
+      });
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -37,8 +42,8 @@ const ScrollIndicator = () => {
 
       {/* Scroll to Top Button */}
       {showScrollTop && (
-        <button className="scroll-to-top" onClick={scrollToTop}>
-          <i className="fas fa-arrow-up"></i>
+        <button className="scroll-to-top" onClick={scrollToTop} aria-label="Scroll to top">
+          <i className="fas fa-arrow-up" aria-hidden="true"></i>
           <span className="scroll-percentage">{Math.round(scrollPercentage)}%</span>
         </button>
       )}

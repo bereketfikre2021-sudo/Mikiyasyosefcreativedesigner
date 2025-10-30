@@ -42,27 +42,36 @@ const About = () => {
 
 
   return (
-    <section id="about" className="about" ref={aboutRef}>
+    <section id="about" className="about" ref={aboutRef} aria-labelledby="about-title">
       <div className="container">
         <div className="section-header">
-          <h2 className="section-title">About Me</h2>
+          <h2 id="about-title" className="section-title">About Me</h2>
           <p className="section-subtitle">Passionate about creating digital experiences</p>
         </div>
         
         <div className="about-content">
           <div className="about-image">
             <div className="image-container">
-              <img src="/img/Miko.webp" alt="Mikiyas" className="profile-img" />
+              <img 
+                src="/img/Miko.webp" 
+                alt="Portrait of Mikiyas Yosef" 
+                className="profile-img"
+                loading="lazy"
+                decoding="async"
+                width="400"
+                height="500"
+                sizes="(max-width: 768px) 100vw, 33vw"
+              />
               <div className="image-glow"></div>
               <div className="floating-elements">
                 <div className="floating-element element-1">
-                  <i className="fab fa-react"></i>
+                  <i className="fab fa-react" aria-hidden="true"></i>
                 </div>
                 <div className="floating-element element-2">
-                  <i className="fas fa-paint-brush"></i>
+                  <i className="fas fa-paint-brush" aria-hidden="true"></i>
                 </div>
                 <div className="floating-element element-3">
-                  <i className="fas fa-code"></i>
+                  <i className="fas fa-code" aria-hidden="true"></i>
                 </div>
               </div>
             </div>
@@ -102,7 +111,7 @@ const About = () => {
                     {creativeSkills.map((skill, index) => (
                       <div key={index} className="skill-item">
                         <div className="skill-icon">
-                          <i className={skill.icon} style={{ color: skill.color }}></i>
+                          <i className={skill.icon} style={{ color: skill.color }} aria-hidden="true"></i>
                         </div>
                         <div className="skill-info">
                           <span className="skill-name">{skill.name}</span>
@@ -128,7 +137,7 @@ const About = () => {
                     {developmentSkills.map((skill, index) => (
                       <div key={index} className="skill-item">
                         <div className="skill-icon">
-                          <i className={skill.icon} style={{ color: skill.color }}></i>
+                          <i className={skill.icon} style={{ color: skill.color }} aria-hidden="true"></i>
                         </div>
                         <div className="skill-info">
                           <span className="skill-name">{skill.name}</span>

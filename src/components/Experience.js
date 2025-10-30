@@ -50,10 +50,10 @@ const Experience = () => {
   ];
 
   return (
-    <section id="experience" className="experience" ref={experienceRef}>
+    <section id="experience" className="experience" ref={experienceRef} aria-labelledby="experience-title">
       <div className="container">
         <div className="section-header">
-          <h2 className="section-title">Experience</h2>
+          <h2 id="experience-title" className="section-title">Experience</h2>
           <p className="section-subtitle">Design journey & creative growth</p>
         </div>
 
