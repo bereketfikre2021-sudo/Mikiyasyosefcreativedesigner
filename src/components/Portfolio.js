@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import projects from '../data/projects';
+import { trackProjectView } from '../utils/analytics';
 
 const Portfolio = () => {
   const [selectedProject, setSelectedProject] = useState(null);
@@ -10,6 +11,7 @@ const Portfolio = () => {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [loadedIds, setLoadedIds] = useState(new Set());
   const [modalImageLoaded, setModalImageLoaded] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const portfolioRef = useRef(null);
 
   // projects now imported from ../data/projects
@@ -19,17 +21,17 @@ const Portfolio = () => {
     { id: 'branding', label: 'Branding', icon: 'fas fa-palette' },
     { id: 'ui-ux', label: 'UI/UX Design', icon: 'fas fa-mobile-alt' },
     { id: 'motion', label: 'Motion Graphics', icon: 'fas fa-video' },
-    { id: 'print', label: 'Print Design', icon: 'fas fa-print' },
+    { id: 'print', label: 'Video Editing', icon: 'fas fa-video' },
     { id: 'web', label: 'Web Design', icon: 'fas fa-globe' },
     { id: 'social', label: 'Social Media', icon: 'fas fa-share-alt' }
   ];
 
   useEffect(() => {
     // Initialize filter from URL (e.g., ?filter=web)
+    const validFilterIds = ['all', 'branding', 'ui-ux', 'motion', 'print', 'web', 'social'];
     const params = new URLSearchParams(window.location.search);
     const urlFilter = params.get('filter');
-    const validFilterIds = new Set(filters.map(f => f.id));
-    if (urlFilter && validFilterIds.has(urlFilter)) {
+    if (urlFilter && validFilterIds.includes(urlFilter)) {
       setActiveFilter(urlFilter);
     }
 
@@ -37,7 +39,7 @@ const Portfolio = () => {
     const handlePopState = () => {
       const p = new URLSearchParams(window.location.search);
       const f = p.get('filter');
-      if (f && validFilterIds.has(f)) {
+      if (f && validFilterIds.includes(f)) {
         setActiveFilter(f);
       } else {
         setActiveFilter('all');
@@ -71,7 +73,15 @@ const Portfolio = () => {
       observer.observe(portfolioRef.current);
     }
 
-    return () => observer.disconnect();
+    // Simulate initial loading for skeleton effect
+    const timer = setTimeout(() => {
+      setIsInitialLoading(false);
+    }, 800);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+    };
   }, []);
 
   useEffect(() => {
@@ -107,34 +117,94 @@ const Portfolio = () => {
   const openModal = (project) => {
     setSelectedProject(project);
     setModalImageLoaded(false);
+    // Track project view
+    trackProjectView(project.title, project.category);
   };
 
   const closeModal = () => {
     setSelectedProject(null);
   };
 
-  const buildSrcSet = (url) => {
+  // Share functionality
+  const handleShare = async (project, platform) => {
+    const url = window.location.href;
+    const text = `Check out this ${project.title} project by Mikiyas Yosef - ${project.description}`;
+    const shareUrl = `${url}#portfolio?project=${project.id}`;
+
     try {
-      const widths = [400, 600, 900, 1200];
-      return widths
-        .map((w) => `${url.replace(/w=\d+/, `w=${w}`)} ${w}w`)
-        .join(', ');
-    } catch {
-      return undefined;
+      if (platform === 'native' && navigator.share) {
+        await navigator.share({
+          title: project.title,
+          text: text,
+          url: shareUrl
+        });
+      } else if (platform === 'copy') {
+        await navigator.clipboard.writeText(shareUrl);
+        // Could use a toast notification here instead
+        const btn = document.querySelector(`button[aria-label="Copy link to clipboard"]`);
+        if (btn) {
+          const originalHTML = btn.innerHTML;
+          btn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i>';
+          setTimeout(() => {
+            btn.innerHTML = originalHTML;
+          }, 2000);
+        }
+      } else {
+        const shareLinks = {
+          twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`,
+          facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+          linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+          whatsapp: `https://wa.me/?text=${encodeURIComponent(text + ' ' + shareUrl)}`,
+          telegram: `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`
+        };
+        if (shareLinks[platform]) {
+          window.open(shareLinks[platform], '_blank', 'width=600,height=400');
+        }
+      }
+    } catch (error) {
+      console.error('Share error:', error);
     }
   };
 
+  // Keyboard shortcuts handler
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // ESC to close modal
+      if (e.key === 'Escape' && selectedProject) {
+        closeModal();
+        return;
+      }
+
+      // Arrow keys for portfolio navigation (when modal is open)
+      if (selectedProject && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+        e.preventDefault();
+        const currentIndex = filteredProjects.findIndex(p => p.id === selectedProject.id);
+        if (currentIndex !== -1 && filteredProjects.length > 0) {
+          if (e.key === 'ArrowLeft') {
+            const prevIndex = currentIndex > 0 ? currentIndex - 1 : filteredProjects.length - 1;
+            openModal(filteredProjects[prevIndex]);
+          } else if (e.key === 'ArrowRight') {
+            const nextIndex = currentIndex < filteredProjects.length - 1 ? currentIndex + 1 : 0;
+            openModal(filteredProjects[nextIndex]);
+          }
+        }
+      }
+    };
+
+    if (selectedProject) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedProject, filteredProjects]);
+
+  // For local images, we don't need srcSet generation
+  // The browser will handle WebP images efficiently
   const sizes = "(max-width: 600px) 100vw, (max-width: 1200px) 50vw, 33vw";
 
   const getIntrinsicSize = (url) => {
-    try {
-      const u = new URL(url);
-      const w = parseInt(u.searchParams.get('w') || '600', 10);
-      const h = parseInt(u.searchParams.get('h') || '400', 10);
-      return { width: w, height: h };
-    } catch {
-      return { width: 600, height: 400 };
-    }
+    // Default aspect ratio for portfolio images
+    // Can be customized per project if needed
+    return { width: 800, height: 600 };
   };
 
   return (
@@ -152,31 +222,55 @@ const Portfolio = () => {
                 key={filter.id}
                 className={`filter-btn ${activeFilter === filter.id ? 'active' : ''}`}
                 onClick={() => handleFilterClick(filter.id)}
+                aria-pressed={activeFilter === filter.id}
+                aria-label={`Filter by ${filter.label}`}
               >
-                <i className={filter.icon}></i>
+                <i className={filter.icon} aria-hidden="true"></i>
                 <span>{filter.label}</span>
               </button>
             ))}
           </div>
 
           <div className={`portfolio-grid ${isFiltering ? 'animating' : ''}`}>
-            {filteredProjects.map((project, index) => (
+            {isInitialLoading && filteredProjects.length > 0 ? (
+              // Skeleton loaders
+              Array.from({ length: filteredProjects.length }).map((_, index) => (
+                <div key={`skeleton-${index}`} className="portfolio-item-skeleton">
+                  <div className="skeleton-image"></div>
+                  <div className="skeleton-content">
+                    <div className="skeleton-title"></div>
+                    <div className="skeleton-text"></div>
+                    <div className="skeleton-text short"></div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              filteredProjects.map((project, index) => (
               <div 
                 key={project.id} 
                 className={`portfolio-item ${project.featured ? 'featured' : ''} ${isVisible ? 'animate' : ''}`}
                 style={{ animationDelay: `${index * 0.1}s` }}
                 data-category={project.category}
+                onClick={() => openModal(project)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openModal(project);
+                  }
+                }}
+                aria-label={`View ${project.title} project details`}
               >
                 <div className="project-image">
                   <img 
                     src={project.image} 
-                    srcSet={buildSrcSet(project.image)}
                     sizes={sizes}
                     loading="lazy"
                     decoding="async"
                     width={getIntrinsicSize(project.image).width}
                     height={getIntrinsicSize(project.image).height}
-                    alt={project.title}
+                    alt={`${project.title} portfolio project - ${project.description}. ${project.category === 'ui-ux' ? 'UI/UX' : project.category === 'print' ? 'Video Editing' : project.category.charAt(0).toUpperCase() + project.category.slice(1).replace(/-/g, ' ')} design work by Mikiyas Yosef`}
                     onLoad={() => handleImageLoad(project.id)}
                     className={loadedIds.has(project.id) ? '' : 'lqip'} 
                   />
@@ -192,9 +286,18 @@ const Portfolio = () => {
                         <span key={i} className="tech-tag">{tech}</span>
                       ))}
                     </div>
-                    <button className="view-project-btn" onClick={() => openModal(project)}>
+                    <button 
+                      className="view-project-btn" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openModal(project);
+                      }} 
+                      aria-label={`View details for ${project.title}`}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      onTouchStart={(e) => e.stopPropagation()}
+                    >
                       <span>View Project</span>
-                      <i className="fas fa-arrow-right"></i>
+                      <i className="fas fa-arrow-right" aria-hidden="true"></i>
                     </button>
                   </div>
                 </div>
@@ -215,7 +318,8 @@ const Portfolio = () => {
                   </div>
                 </div>
               </div>
-            ))}
+              ))
+            )}
           </div>
 
         </div>
@@ -225,18 +329,17 @@ const Portfolio = () => {
       {selectedProject && (
         <div id="projectModal" className="modal" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <span className="close" onClick={closeModal}>&times;</span>
+            <span className="close" onClick={closeModal} aria-label="Close modal" role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && closeModal()}>&times;</span>
             <div className="modal-body">
               <div className="modal-image">
                 <img 
                   src={selectedProject.image}
-                  srcSet={buildSrcSet(selectedProject.image)}
                   sizes="(max-width: 768px) 100vw, 50vw"
                   loading="eager"
                   decoding="async"
                   width={getIntrinsicSize(selectedProject.image).width}
                   height={getIntrinsicSize(selectedProject.image).height}
-                  alt={selectedProject.title}
+                    alt={`${selectedProject.title} detailed view - ${selectedProject.description}. ${selectedProject.category === 'ui-ux' ? 'UI/UX' : selectedProject.category === 'print' ? 'Video Editing' : selectedProject.category.charAt(0).toUpperCase() + selectedProject.category.slice(1).replace(/-/g, ' ')} portfolio project by Mikiyas Yosef, Creative Designer & Video Editor`}
                   onLoad={() => setModalImageLoaded(true)} 
                   className={modalImageLoaded ? '' : 'lqip'} 
                 />
@@ -247,12 +350,123 @@ const Portfolio = () => {
               </div>
               <div className="modal-info">
                 <h2>{selectedProject.title}</h2>
-                <p>{selectedProject.description}</p>
-                <div className="modal-tech">
-                  {selectedProject.tech.split(' • ').map((tech, i) => (
-                    <span key={i} className="tech-tag">{tech}</span>
-                  ))}
+                <p className="modal-description">{selectedProject.description}</p>
+                
+                {/* Project Details */}
+                <div className="modal-details">
+                  {selectedProject.duration && (
+                    <div className="detail-item">
+                      <i className="fas fa-clock" aria-hidden="true"></i>
+                      <div>
+                        <span className="detail-label">Duration</span>
+                        <span className="detail-value">{selectedProject.duration}</span>
+                      </div>
+                    </div>
+                  )}
+                  {selectedProject.client && (
+                    <div className="detail-item">
+                      <i className="fas fa-user-tie" aria-hidden="true"></i>
+                      <div>
+                        <span className="detail-label">Client</span>
+                        <span className="detail-value">{selectedProject.client}</span>
+                      </div>
+                    </div>
+                  )}
+                  {selectedProject.teamSize && (
+                    <div className="detail-item">
+                      <i className="fas fa-users" aria-hidden="true"></i>
+                      <div>
+                        <span className="detail-label">Team Size</span>
+                        <span className="detail-value">{selectedProject.teamSize}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
+
+                {/* Deliverables */}
+                {selectedProject.deliverables && (
+                  <div className="modal-deliverables">
+                    <h4 className="deliverables-title">
+                      <i className="fas fa-box" aria-hidden="true"></i>
+                      Deliverables
+                    </h4>
+                    <div className="deliverables-list">
+                      {selectedProject.deliverables.split(' • ').map((deliverable, i) => (
+                        <span key={i} className="deliverable-tag">
+                          <i className="fas fa-check" aria-hidden="true"></i>
+                          {deliverable}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Process Workflow */}
+                {selectedProject.process && selectedProject.process.length > 0 && (
+                  <div className="modal-process-workflow">
+                    <h4 className="workflow-title">
+                      <i className="fas fa-sitemap" aria-hidden="true"></i>
+                      Process Workflow
+                    </h4>
+                    <div className="workflow-steps">
+                      {selectedProject.process.map((step, index) => (
+                        <div key={index} className="workflow-step">
+                          <div className="step-number">{index + 1}</div>
+                          <div className="step-content">
+                            <span className="step-name">{step}</span>
+                          </div>
+                          {index < selectedProject.process.length - 1 && (
+                            <div className="step-connector"></div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Challenge & Solution */}
+                {(selectedProject.challenge || selectedProject.solution) && (
+                  <div className="modal-process">
+                    {selectedProject.challenge && (
+                      <div className="process-item">
+                        <h4 className="process-title">
+                          <i className="fas fa-exclamation-circle" aria-hidden="true"></i>
+                          Challenge
+                        </h4>
+                        <p>{selectedProject.challenge}</p>
+                      </div>
+                    )}
+                    {selectedProject.solution && (
+                      <div className="process-item">
+                        <h4 className="process-title">
+                          <i className="fas fa-check-circle" aria-hidden="true"></i>
+                          Solution
+                        </h4>
+                        <p>{selectedProject.solution}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Metrics/Results */}
+                {selectedProject.metrics && (
+                  <div className="modal-metrics">
+                    <i className="fas fa-chart-line" aria-hidden="true"></i>
+                    <p><strong>Results:</strong> {selectedProject.metrics}</p>
+                  </div>
+                )}
+
+                {/* Tech Stack */}
+                <div className="modal-tech">
+                  <h4 className="tech-title">Technologies Used</h4>
+                  <div className="tech-tags">
+                    {selectedProject.tech.split(' • ').map((tech, i) => (
+                      <span key={i} className="tech-tag">{tech}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Action Links */}
                 <div className="modal-links">
                   {selectedProject.demo && selectedProject.demo !== '#' && (
                     <a href={selectedProject.demo} className="modal-link" target="_blank" rel="noopener noreferrer" aria-label={`Open live demo of ${selectedProject.title}`}>
@@ -266,6 +480,76 @@ const Portfolio = () => {
                       <span>{(selectedProject.behance && selectedProject.behance !== '#') ? "Behance" : "GitHub"}</span>
                     </a>
                   ) : null}
+                </div>
+
+                {/* Share Buttons */}
+                <div className="modal-share">
+                  <h4 className="share-title">Share Project</h4>
+                  <div className="share-buttons">
+                    {navigator.share && (
+                      <button 
+                        className="share-btn"
+                        onClick={() => handleShare(selectedProject, 'native')}
+                        aria-label="Share using native share"
+                        title="Native Share"
+                      >
+                        <i className="fas fa-share-alt" aria-hidden="true"></i>
+                      </button>
+                    )}
+                    <button 
+                      className="share-btn"
+                      onClick={() => handleShare(selectedProject, 'copy')}
+                      aria-label="Copy link to clipboard"
+                      title="Copy Link"
+                    >
+                      <i className="fas fa-link" aria-hidden="true"></i>
+                    </button>
+                    <button 
+                      className="share-btn"
+                      onClick={() => handleShare(selectedProject, 'twitter')}
+                      aria-label="Share on Twitter"
+                      title="Twitter"
+                    >
+                      <i className="fab fa-twitter" aria-hidden="true"></i>
+                    </button>
+                    <button 
+                      className="share-btn"
+                      onClick={() => handleShare(selectedProject, 'facebook')}
+                      aria-label="Share on Facebook"
+                      title="Facebook"
+                    >
+                      <i className="fab fa-facebook" aria-hidden="true"></i>
+                    </button>
+                    <button 
+                      className="share-btn"
+                      onClick={() => handleShare(selectedProject, 'linkedin')}
+                      aria-label="Share on LinkedIn"
+                      title="LinkedIn"
+                    >
+                      <i className="fab fa-linkedin" aria-hidden="true"></i>
+                    </button>
+                    <button 
+                      className="share-btn"
+                      onClick={() => handleShare(selectedProject, 'whatsapp')}
+                      aria-label="Share on WhatsApp"
+                      title="WhatsApp"
+                    >
+                      <i className="fab fa-whatsapp" aria-hidden="true"></i>
+                    </button>
+                    <button 
+                      className="share-btn"
+                      onClick={() => handleShare(selectedProject, 'telegram')}
+                      aria-label="Share on Telegram"
+                      title="Telegram"
+                    >
+                      <i className="fab fa-telegram" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Navigation Hint */}
+                <div className="modal-navigation-hint">
+                  <p><i className="fas fa-info-circle" aria-hidden="true"></i> Use <kbd>←</kbd> <kbd>→</kbd> arrow keys to navigate • <kbd>ESC</kbd> to close</p>
                 </div>
               </div>
             </div>

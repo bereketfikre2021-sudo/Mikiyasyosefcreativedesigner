@@ -169,6 +169,55 @@ const Hero = () => {
         <div className="gradient-orb orb-3"></div>
       </div>
 
+      {/* Floating Design & Coding Icons */}
+      <div className="floating-icons" aria-hidden="true">
+        {/* Graphic Design Icons */}
+        <div className="floating-icon icon-palette" aria-label="Graphic Design">
+          <i className="fas fa-palette" aria-hidden="true"></i>
+        </div>
+        <div className="floating-icon icon-brush" aria-label="Paint Brush">
+          <i className="fas fa-paint-brush" aria-hidden="true"></i>
+        </div>
+        <div className="floating-icon icon-pencil" aria-label="Design Tools">
+          <i className="fas fa-pencil-alt" aria-hidden="true"></i>
+        </div>
+        <div className="floating-icon icon-layer" aria-label="Design Layers">
+          <i className="fas fa-layer-group" aria-hidden="true"></i>
+        </div>
+        <div className="floating-icon icon-ruler" aria-label="Design Ruler">
+          <i className="fas fa-ruler-combined" aria-hidden="true"></i>
+        </div>
+        <div className="floating-icon icon-shapes" aria-label="Design Shapes">
+          <i className="fas fa-shapes" aria-hidden="true"></i>
+        </div>
+        
+        {/* Coding Icons */}
+        <div className="floating-icon icon-code" aria-label="Code">
+          <i className="fas fa-code" aria-hidden="true"></i>
+        </div>
+        <div className="floating-icon icon-brackets" aria-label="Code File">
+          <i className="fas fa-file-code" aria-hidden="true"></i>
+        </div>
+        <div className="floating-icon icon-html" aria-label="HTML5">
+          <i className="fab fa-html5" aria-hidden="true"></i>
+        </div>
+        <div className="floating-icon icon-css" aria-label="CSS3">
+          <i className="fab fa-css3-alt" aria-hidden="true"></i>
+        </div>
+        <div className="floating-icon icon-js" aria-label="JavaScript">
+          <i className="fab fa-js" aria-hidden="true"></i>
+        </div>
+        <div className="floating-icon icon-terminal" aria-label="Terminal">
+          <i className="fas fa-terminal" aria-hidden="true"></i>
+        </div>
+        <div className="floating-icon icon-git" aria-label="Git">
+          <i className="fab fa-git-alt" aria-hidden="true"></i>
+        </div>
+        <div className="floating-icon icon-react" aria-label="React">
+          <i className="fab fa-react" aria-hidden="true"></i>
+        </div>
+      </div>
+
       <div className="hero-container">
         <div className="hero-content">
           {/* Badge */}
@@ -180,7 +229,7 @@ const Hero = () => {
           {/* Main Title */}
           <h1 className="hero-title">
             <span className="title-main">Mikiyas Yosef</span>
-            <span className="title-gradient">Creative Developer</span>
+            <span className="title-gradient">Creative Designer</span>
           </h1>
 
           {/* Description */}
@@ -207,11 +256,11 @@ const Hero = () => {
 
           {/* CTA Buttons */}
           <div className="hero-actions">
-            <a className="btn-secondary" href="https://heyzine.com/flip-book/2e51bd7d15.html" target="_blank" rel="noopener noreferrer">
+            <a className="btn-secondary" href="https://heyzine.com/flip-book/2e51bd7d15.html" target="_blank" rel="noopener noreferrer" aria-label="View Mikiyas Yosef CV and resume">
               <span>View CV</span>
               <i className="fas fa-file-alt" aria-hidden="true"></i>
             </a>
-            <a className="btn-primary" href="#contact">
+            <a className="btn-primary" href="#contact" aria-label="Navigate to contact section to hire Mikiyas">
               <span>Hire Me</span>
               <i className="fas fa-briefcase" aria-hidden="true"></i>
             </a>
@@ -220,13 +269,13 @@ const Hero = () => {
 
         {/* Social Links */}
         <div className="hero-social">
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="GitHub">
+          <a href="https://github.com/MikoCr7" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="GitHub">
             <i className="fab fa-github" aria-hidden="true"></i>
           </a>
-          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="LinkedIn">
+          <a href="https://www.linkedin.com/in/mikiyas-yosaph-b580b7301/" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="LinkedIn">
             <i className="fab fa-linkedin" aria-hidden="true"></i>
           </a>
-          <a href="https://behance.net" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Behance">
+          <a href="https://www.behance.net/mikiyasyosafe" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Behance">
             <i className="fab fa-behance" aria-hidden="true"></i>
           </a>
           <a href="https://t.me/Miko_Cr7" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Telegram">

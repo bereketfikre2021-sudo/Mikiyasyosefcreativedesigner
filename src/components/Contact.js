@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { trackContactSubmit } from '../utils/analytics';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -104,11 +105,15 @@ const Contact = () => {
       if (statusRef.current) {
         statusRef.current.textContent = 'Message sent successfully! I will get back to you soon.';
       }
+      // Track successful form submission
+      trackContactSubmit(true);
     } catch (error) {
       console.error('Error submitting form:', error);
       if (statusRef.current) {
         statusRef.current.textContent = 'Error sending message. Please try again or email me directly.';
       }
+      // Track failed form submission
+      trackContactSubmit(false);
     } finally {
       setIsSubmitting(false);
     }

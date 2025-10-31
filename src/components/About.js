@@ -54,7 +54,7 @@ const About = () => {
             <div className="image-container">
               <img 
                 src="/img/Miko.webp" 
-                alt="Portrait of Mikiyas Yosef" 
+                alt="Mikiyas Yosef - Creative Designer and Video Editor professional portrait photo" 
                 className="profile-img"
                 loading="lazy"
                 decoding="async"

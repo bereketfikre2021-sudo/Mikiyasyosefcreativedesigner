@@ -53,7 +53,7 @@ const Navbar = () => {
       <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`} role="navigation" aria-label="Primary">
         <div className="nav-container">
         <div className="nav-logo">
-          <img src="/img/Mikiyas Yosef Logo.svg" alt="Mikiyas Yosef" className="logo-img" decoding="async" fetchpriority="high" />
+          <img src="/img/Mikiyas Yosef Logo.svg" alt="Mikiyas Yosef - Creative Designer & Video Editor Logo" className="logo-img" decoding="async" fetchpriority="high" />
         </div>
         
         <ul id="primary-menu" className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
