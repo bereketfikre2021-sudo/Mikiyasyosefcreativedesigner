@@ -13,7 +13,7 @@ const Navbar = () => {
       ticking = true;
       requestAnimationFrame(() => {
         setIsScrolled(window.scrollY > 50);
-      const sections = ['home', 'about', 'services', 'portfolio', 'experience', 'testimonials', 'contact'];
+      const sections = ['home', 'about', 'services', 'portfolio', 'experience', 'testimonials', 'faq', 'contact'];
         const scrollPosition = window.scrollY + 100;
         for (let i = sections.length - 1; i >= 0; i--) {
           const element = document.getElementById(sections[i]);
@@ -124,7 +124,15 @@ const Navbar = () => {
               <span>Testimonials</span>
             </button>
           </li>
-          
+          <li>
+            <button 
+              onClick={() => scrollToSection('faq')} 
+              className={`nav-link ${activeSection === 'faq' ? 'active' : ''}`}
+              aria-current={activeSection === 'faq' ? 'page' : undefined}
+            >
+              <span>FAQ</span>
+            </button>
+          </li>
           <li>
             <button 
               onClick={() => scrollToSection('contact')} 
